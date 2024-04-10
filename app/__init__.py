@@ -3,8 +3,12 @@ import os, sys
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 from redis import StrictRedis
+
+
 from app.settings.config import config_dict
 from common.utils import contants
+
+from utils.converters import register_converters
 
 # 将common文件添加到python搜索路径
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -57,6 +61,8 @@ def create_app(type):
     register_blueprint(app)
     return app
 
+
+
 #######################注册########################################
 def register_extentions(app: Flask):  # 声明app形参传入的是什么
     '''注册拓展初始化组件'''
@@ -69,6 +75,9 @@ def register_extentions(app: Flask):  # 声明app形参传入的是什么
     global redis_cli
     # decode_responses=True将返回的bytes类型转为str
     redis_cli = StrictRedis(host=app.config['REDIS_HOST'], port=app.config['REDIS_PORT'], decode_responses=True)
+
+    #3.给Flask添加自定义的路由转换器
+    register_converters(app)
 
 
 def register_blueprint(app:Flask):
