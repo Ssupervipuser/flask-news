@@ -1,20 +1,21 @@
-#初始化及注册模块
+# 初始化及注册模块
 import os, sys
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 from redis import StrictRedis
-
-
+from flask_migrate import Migrate
 from app.settings.config import config_dict
-from common.utils import contants
 
-from utils.converters import register_converters
+
+
 
 # 将common文件添加到python搜索路径
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE_PATH + '/common')
 # print(BASE_PATH)
-
+#todo 先设置资源路径,在使用
+from utils import contants
+from utils.converters import register_converters
 
 ####################添加数据库###################
 # 方法1：db=SQLAlchemy(app)
@@ -62,10 +63,9 @@ def create_app(type):
     return app
 
 
-
 #######################注册########################################
 def register_extentions(app: Flask):  # 声明app形参传入的是什么
-    '''注册拓展初始化组件'''
+    """注册拓展初始化组件"""
 
     # 1.延后加载app，进行mysql数据库对象初始化
     db.init_app(app)
@@ -74,13 +74,19 @@ def register_extentions(app: Flask):  # 声明app形参传入的是什么
 
     global redis_cli
     # decode_responses=True将返回的bytes类型转为str
-    redis_cli = StrictRedis(host=app.config['REDIS_HOST'], port=app.config['REDIS_PORT'], decode_responses=True)
 
-    #3.给Flask添加自定义的路由转换器
+    redis_cli = StrictRedis(host=StrictRedis.from_url('redis://127.0.0.1:6381/0'), port=app.config['REDIS_PORT'], decode_responses=True)
+
+    # 3.给Flask添加自定义的路由转换器
     register_converters(app)
 
+    # 4.数据库迁移
+    #todo:注意一定要导入需要执行迁移的模型文件
+    from model import user
+    Migrate(app, db)
 
-def register_blueprint(app:Flask):
+
+def register_blueprint(app: Flask):
     """注册蓝图对象"""
     # 1.注册用户模块的蓝图对象
     # TODO: 注意循环导包问题，延后导包，

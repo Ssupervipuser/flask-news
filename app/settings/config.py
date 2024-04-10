@@ -16,7 +16,7 @@ class DefalutConfig():
     SQLALCHEMY_ECHO = True
 
     # redis连接配置
-    REDIS_HOST = '192.168.10.131'
+    REDIS_HOST = '1'
     # 需要连接主库
     REDIS_PORT = 6381
 
