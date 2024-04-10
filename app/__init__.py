@@ -1,3 +1,4 @@
+#初始化及注册模块
 import os, sys
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
@@ -25,6 +26,7 @@ db = SQLAlchemy()
 redis_cli = None  # type: StrictRedis
 
 
+#########################创造app############################
 def create_flask_app(type):
     '''
     内配调用的生产app的方法
@@ -52,19 +54,26 @@ def create_app(type):
     # 2.注册拓展初始化组件
     register_extentions(app)
     # 3.注册蓝图初始化组件
-
+    register_blueprint(app)
     return app
 
-
+#######################注册########################################
 def register_extentions(app: Flask):  # 声明app形参传入的是什么
     '''注册拓展初始化组件'''
 
     # 1.延后加载app，进行mysql数据库对象初始化
     db.init_app(app)
 
-    # 2.延后加载app中redis哭护短配置信息，然后创建redis客户端对象
+    # 2.延后加载app中redis客户端配置信息，然后创建redis客户端对象
 
     global redis_cli
-    #decode_responses=True将返回的bytes类型转为str
+    # decode_responses=True将返回的bytes类型转为str
     redis_cli = StrictRedis(host=app.config['REDIS_HOST'], port=app.config['REDIS_PORT'], decode_responses=True)
-    pass
+
+
+def register_blueprint(app:Flask):
+    """注册蓝图对象"""
+    # 1.注册用户模块的蓝图对象
+    # TODO: 注意循环导包问题，延后导包，
+    from app.resource.user import user_bp
+    app.register_blueprint(user_bp)

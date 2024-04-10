@@ -1,3 +1,4 @@
+# 系统配置信息
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -5,6 +6,9 @@ class DefalutConfig():
     '''醒目默认配置信息'''
     # session加密字符串
     SECRET_KEY = 'flask_news'
+
+    # flask-restful防止返回中文为ascii编码格式
+    RESTFUL_JSON = {'ensure_ascii': False}
 
     # mysql连接配置
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:mysql@192.168.10.131:3306/flasknews'
