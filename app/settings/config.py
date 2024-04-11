@@ -20,6 +20,11 @@ class DefalutConfig():
     # 需要连接主库
     REDIS_PORT = 6381
 
+    # JWT
+    JWT_SECRET = "zheshijwtdemiyaokeyishirenyizhi"
+    # 过期时长
+    JWT_LOGIN_EXPIRE=2
+    JWT_REFRESH_EXPIRE=14
 
 class DevelopmentConfig(DefalutConfig):
     '''开发环境配置信息'''
