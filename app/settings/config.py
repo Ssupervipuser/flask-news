@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 
 class DefalutConfig():
-    '''醒目默认配置信息'''
+    '''默认配置信息'''
     # session加密字符串
     SECRET_KEY = 'flask_news'
 
@@ -16,7 +16,7 @@ class DefalutConfig():
     SQLALCHEMY_ECHO = True
 
     # redis连接配置
-    REDIS_HOST = '1'
+    REDIS_HOST = '192.168.10.131'
     # 需要连接主库
     REDIS_PORT = 6381
 

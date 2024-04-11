@@ -22,13 +22,13 @@ class SMSCodeResource(Resource):
         # 1.产生6位随机数字
         random_smscode = "%06d" % (random.randint(0, 999999))
         # 2.将短信保存在reids中
-        # key = "app:code:{}".format(mobile)
-        # redis_cli.setex(name=key, time=SMS_CODE_EXPIRE, value=random_smscode)
+        key = "app:code:{}".format(mobile)
+        redis_cli.setex(name=key, time=SMS_CODE_EXPIRE, value=random_smscode)
         # 3.调用第三方平台发送短信
         print("发送短信成功 mobile：{} sms:{}".format(mobile, random_smscode))
         # 返回
-        # return {"mobile": mobile, "smscode": random_smscode}
-        return {"mobile": mobile, "smscode": 123456}
+        return {"mobile": mobile, "smscode": random_smscode}
+        # return {"mobile": mobile, "smscode": 123456}
 
 
 class LoginRegisterResource(Resource):
@@ -60,7 +60,7 @@ class LoginRegisterResource(Resource):
         # 14h过期时长
         expire_14h = datetime.utcnow() + timedelta(hours=current_app.config['JWT_REFRESH_EXPIRE'])
         # 生成token
-        refresh_token = generate_jwt(payload=login_payload, expiry=expire_14h, secret=current_app.config['JWT_SECRET'])
+        refresh_token = generate_jwt(payload=refresh_payload, expiry=expire_14h, secret=current_app.config['JWT_SECRET'])
 
         return token, refresh_token
 
@@ -100,6 +100,7 @@ class LoginRegisterResource(Resource):
         #     1.根据手机号码凭借短信验证码的key，查询真实的短信验证码值
         key = 'app:code:{}'.format(mobile)
         real_smscode = redis_cli.get(key)
+
         #     2.删除短信验证码【防止多次使用同一个短信验证码验证多次】
         # redis_cli.delete(key)
 
@@ -112,7 +113,7 @@ class LoginRegisterResource(Resource):
         #     6.用户不存在新建用户添加到数据库
         if user is None:
             user = User(name=mobile, mobile=mobile, last_login=datetime.now())
-            db.seesion.add(user)
+            db.session.add(user)
         #     5.用户存在：登录--修改最有一次登陆时间
         else:
             user.last_login = datetime.now()
@@ -125,3 +126,10 @@ class LoginRegisterResource(Resource):
             return {'message': e}, 507
         # 4.return
         #  todo:   1.返回2小时有效的登录token（某些视图需要验证的token），返回14天有效的刷新token（过期需要登录）
+        token, refresh_token = self._generator_token(user.id)
+        return {"token": token, "refresh_token": refresh_token}
+
+    def put(self):
+
+        #todo:刷新token逻辑实现
+        pass

@@ -54,10 +54,13 @@ def create_app(type):
     :param type: 配置的类型
     :return: app
     '''
+
     # 1.调用内容方法生产app
     app = create_flask_app(type)
+
     # 2.注册拓展初始化组件
     register_extentions(app)
+
     # 3.注册蓝图初始化组件
     register_blueprint(app)
     return app
@@ -75,14 +78,18 @@ def register_extentions(app: Flask):  # 声明app形参传入的是什么
     global redis_cli
     # decode_responses=True将返回的bytes类型转为str
 
-    redis_cli = StrictRedis(host=StrictRedis.from_url('redis://127.0.0.1:6381/0'), port=app.config['REDIS_PORT'], decode_responses=True)
+    # redis_cli = StrictRedis(host=app.config['REDIS_HOST'], port=app.config['REDIS_PORT'], decode_responses=True)
+
+    # redis_cli = StrictRedis(host=StrictRedis.from_url('redis://127.0.0.1:6381/0'), decode_responses=True)
+    redis_cli = StrictRedis(host=None, decode_responses=True)
 
     # 3.给Flask添加自定义的路由转换器
     register_converters(app)
 
     # 4.数据库迁移
     #todo:注意一定要导入需要执行迁移的模型文件
-    from model import user
+
+    # from model import user
     Migrate(app, db)
 
 
