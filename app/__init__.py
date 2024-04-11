@@ -92,6 +92,10 @@ def register_extentions(app: Flask):  # 声明app形参传入的是什么
     # from model import user
     Migrate(app, db)
 
+    #5.添加请求钩子装饰
+    from utils.middleware import get_userinfo
+    app.before_request(get_userinfo)
+
 
 def register_blueprint(app: Flask):
     """注册蓝图对象"""
